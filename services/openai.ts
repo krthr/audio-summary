@@ -35,12 +35,12 @@ export async function createSummary(text: string) {
       {
         role: "user",
         content:
-          "Resume en no más de 5 frases el siguiente texto y " +
-          "también obtén el sentimiento del usuario. Muestra el " +
-          "sentimiento con una sola palabra (los únicos valores " +
-          "posibles para el sentimiento son: positivo, negativo o neutral). " +
-          "No expliques el sentimiento. Muestra los resultados en dos " +
-          "párrafos: uno para el resumen y el otro para el sentimiento. \n\n" +
+          "Generar: " +
+          "1. Tema del texto \n" +
+          "2. Resumen con no más de 5 frases \n" +
+          "3. Sentimiento del texto (NEGATIVO, POSITIVO, NEUTRO) \n" +
+          "4. Etiquetas separadas por coma" +
+          "\n\n" +
           text.trim(),
       },
     ],
