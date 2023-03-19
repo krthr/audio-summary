@@ -46,5 +46,5 @@ export async function createSummary(text: string) {
     ],
   });
 
-  return response.data.choices[0]?.message?.content;
+  return response.data.choices[0]?.message?.content?.trim();
 }
