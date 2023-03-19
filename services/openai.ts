@@ -40,8 +40,7 @@ export async function createSummary(text: string) {
           "sentimiento con una sola palabra (los únicos valores " +
           "posibles para el sentimiento son: positivo, negativo o neutral). " +
           "No expliques el sentimiento. Muestra los resultados en dos " +
-          "párrafos: uno para el resumen y el otro para el sentimiento. " +
-          "Agrega el título a cada párrafo: \n\n" +
+          "párrafos: uno para el resumen y el otro para el sentimiento. \n\n" +
           text.trim(),
       },
     ],
