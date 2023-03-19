@@ -1,0 +1,11 @@
+@layout('layouts/main')
+@section('body')
+
+<div class="container">
+  <form enctype="multipart/form-data" action="/" method="post">
+    <input type="file" name="audio" id="audio">
+    <input class="button is-primary" type="submit" value="Enviar">
+  </form>
+</div>
+
+@endsection

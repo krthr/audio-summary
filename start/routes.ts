@@ -18,8 +18,8 @@
 |
 */
 
-import Route from '@ioc:Adonis/Core/Route'
+import Route from "@ioc:Adonis/Core/Route";
 
-Route.get('/', async ({ view }) => {
-  return view.render('welcome')
-})
+Route.get("/", "CallsController.index");
+Route.post("/", "CallsController.store");
+Route.get("/:id", "CallsController.show");

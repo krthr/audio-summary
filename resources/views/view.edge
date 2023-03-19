@@ -1,0 +1,27 @@
+@layout('layouts/main')
+@section('body')
+
+<div class="content">
+  <table>
+    <tbody>
+      <tr>
+        <td>ID</td>
+        <td>{{ id }}</td>
+      </tr>
+      <tr>
+        <td>Archivo</td>
+        <td>{{ fileName }}</td>
+      </tr>
+      <tr>
+        <td>Texto</td>
+        <td>{{ text }}</td>
+      </tr>
+      <tr>
+        <td>Resumen</td>
+        <td>{{ summary }}</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+@end
