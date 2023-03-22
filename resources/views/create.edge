@@ -1,9 +1,22 @@
 @layout('layouts/main')
 @section('body')
 
-<div class="container">
-  <form enctype="multipart/form-data" action="/" method="post">
-    <input type="file" name="audio" id="audio">
+<div class="container is-flex is-flex-direction-column is-align-content-center is-justify-content-center"
+  style="max-width: 400px">
+  @if(error)
+  <div class="notification is-danger is-light">
+    <a class="delete" href="/"></a>
+    {{ error }}
+  </div>
+  @end
+
+  <form class="box" enctype="multipart/form-data" action="/" method="post">
+    <div class="field">
+      <div class="control">
+        <input type="file" name="audio" id="audio">
+      </div>
+    </div>
+
     <input class="button is-primary" type="submit" value="Enviar">
   </form>
 </div>

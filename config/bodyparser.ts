@@ -192,7 +192,7 @@ const bodyParserConfig: BodyParserConfig = {
     | and fields data.
     |
     */
-    limit: '20mb',
+    limit: '50mb',
 
     /*
     |--------------------------------------------------------------------------

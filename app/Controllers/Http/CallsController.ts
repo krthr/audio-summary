@@ -1,6 +1,5 @@
 import type { HttpContextContract } from "@ioc:Adonis/Core/HttpContext";
 import Redis from "@ioc:Adonis/Addons/Redis";
-import StoreCallValidator from "App/Validators/StoreCallValidator";
 import { createSummary, createTranscription } from "../../../services/openai";
 import { readFile } from "node:fs/promises";
 
@@ -9,12 +8,28 @@ export default class CallsController {
     return view.render("create");
   }
 
-  public async store({ request, response }: HttpContextContract) {
-    const body = await request.validate(StoreCallValidator);
+  public async store({ request, response, view }: HttpContextContract) {
+    const audio = request.file("audio", {
+      extnames: ["m4a", "mp3", "webm", "mp4", "mpga", "wav", "mpeg"],
+      size: "25mb",
+    });
+
+    if (!audio) {
+      return view.render("create", {
+        error: "No se ha enviado archivo.",
+      });
+    }
+
+    if (!audio.isValid) {
+      return view.render("create", {
+        error:
+          "Archivo inválido. Debe ser: m4a, mp3, webm, mp4, mpga, wav o mpeg y pesar máx. 25MB",
+      });
+    }
 
     try {
-      const fileName = body.audio.clientName;
-      const file = await readFile(body.audio.tmpPath!);
+      const fileName = audio.clientName;
+      const file = await readFile(audio.tmpPath!);
       const text = await createTranscription(file, fileName);
       const summary = await createSummary(text);
       const id = Math.random().toString(36).slice(2, 7);
@@ -31,7 +46,10 @@ export default class CallsController {
       return response.redirect(`/${id}`);
     } catch (error) {
       console.error(error.response.data);
-      return response.internalServerError(error);
+
+      return view.render("create", {
+        error: error.message,
+      });
     }
   }
 
