@@ -1,4 +1,5 @@
 import type { HttpContextContract } from "@ioc:Adonis/Core/HttpContext";
+import Logger from "@ioc:Adonis/Core/Logger";
 import Redis from "@ioc:Adonis/Addons/Redis";
 import { createSummary, createTranscription } from "../../../services/openai";
 import { readFile } from "node:fs/promises";
@@ -15,12 +16,22 @@ export default class CallsController {
     });
 
     if (!audio) {
+      Logger.error("archivo no se ha enviado");
+
       return view.render("create", {
         error: "No se ha enviado archivo.",
       });
     }
 
     if (!audio.isValid) {
+      Logger.error(
+        {
+          extnames: audio.extname,
+          size: audio.size,
+        },
+        "archivo inválido"
+      );
+
       return view.render("create", {
         error:
           "Archivo inválido. Debe ser: m4a, mp3, webm, mp4, mpga, wav o mpeg y pesar máx. 25MB",
@@ -45,7 +56,7 @@ export default class CallsController {
 
       return response.redirect(`/${id}`);
     } catch (error) {
-      console.error(error.response.data);
+      Logger.error(error);
 
       return view.render("create", {
         error: error.message,
