@@ -2,10 +2,11 @@ import type { HttpContextContract } from "@ioc:Adonis/Core/HttpContext";
 import Logger from "@ioc:Adonis/Core/Logger";
 import Redis from "@ioc:Adonis/Addons/Redis";
 import { createSummary, createTranscription } from "../../../services/openai";
+import { randomBytes } from "node:crypto";
 import { readFile } from "node:fs/promises";
 
 export default class CallsController {
-  public async index({ view }: HttpContextContract) {
+  public index({ view }: HttpContextContract) {
     return view.render("create");
   }
 
@@ -42,14 +43,37 @@ export default class CallsController {
       const fileName = audio.clientName;
       const file = await readFile(audio.tmpPath!);
       const text = await createTranscription(file, fileName);
-      const summary = await createSummary(text);
-      const id = Math.random().toString(36).slice(2, 7);
+      const json = JSON.parse(await createSummary(text));
+
+      const {
+        TEMA: topic,
+        RESUMEN: summary,
+        SENTIMIENTO: sentiment,
+        ETIQUETAS: tags,
+      } = json;
+
+      const id = randomBytes(5).toString("hex");
+      const createdAt = new Date();
+
+      const createdAtFormat = Intl.DateTimeFormat("es-CO", {
+        day: "2-digit",
+        month: "short",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: true,
+      }).format(createdAt);
 
       const payload = {
         id,
         text,
+        topic,
         summary,
+        sentiment,
+        tags,
         fileName,
+        createdAt,
+        createdAtFormat,
       };
 
       await Redis.setex(`calls/${id}`, 60 * 60 * 24, JSON.stringify(payload));

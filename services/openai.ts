@@ -39,7 +39,8 @@ export async function createSummary(text: string) {
           "1. Tema del texto \n" +
           "2. Resumen con no más de 5 frases \n" +
           "3. Sentimiento del texto (NEGATIVO, POSITIVO, NEUTRO) \n" +
-          "4. Etiquetas separadas por coma" +
+          "4. Etiquetas separadas por coma \n" +
+          "Muestra la información en forma de un JSON con las siguientes llaves: TEMA,RESUMEN,SENTIMIENTO,ETIQUETAS" +
           "\n\n" +
           text.trim(),
       },

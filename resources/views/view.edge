@@ -13,12 +13,40 @@
         <td>{{ fileName }}</td>
       </tr>
       <tr>
+        <td>Fecha creación</td>
+        <td>
+          {{ createdAtFormat }}
+        </td>
+      </tr>
+      <tr>
         <td>Texto</td>
         <td>{{ text }}</td>
       </tr>
       <tr>
-        <td>Resumen</td>
-        <td style="white-space: pre-wrap;">{{ summary }}</td>
+        <td>
+          <b>Tema</b>
+        </td>
+        <td>{{ topic }}</td>
+      </tr>
+      <tr>
+        <td>
+          <b>Resumen</b>
+        </td>
+        <td>{{ summary }}</td>
+      </tr>
+      <tr>
+        <td>
+          <b>Sentimiento</b>
+        </td>
+        <td>
+          <b>{{ sentiment }}</b>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <b>Etiquetas</b>
+        </td>
+        <td>{{ tags }}</td>
       </tr>
     </tbody>
   </table>
