@@ -39,45 +39,69 @@ export default class CallsController {
       });
     }
 
+    const fileName = audio.clientName;
+    const file = await readFile(audio.tmpPath!);
+
+    const text = await createTranscription(file, fileName);
+    if (!text) {
+      return view.render("create", {
+        error: "No se pudo extraer ninguna transcripción del audio.",
+      });
+    }
+
+    const rawJsonSummary = await createSummary(text);
+    if (!rawJsonSummary) {
+      return view.render("create", {
+        error:
+          "Ha ocurrido un error al extraer información de la transcripción.",
+      });
+    }
+
+    let json;
     try {
-      const fileName = audio.clientName;
-      const file = await readFile(audio.tmpPath!);
-      const text = await createTranscription(file, fileName);
-      const json = JSON.parse(await createSummary(text));
+      json = JSON.parse(rawJsonSummary);
+    } catch (error) {
+      Logger.error({ rawJsonSummary }, error);
 
-      const {
-        TEMA: topic,
-        RESUMEN: summary,
-        SENTIMIENTO: sentiment,
-        ETIQUETAS: tags,
-      } = json;
+      return view.render("create", {
+        error:
+          "Ha ocurrido un error al extraer información de la transcripción.",
+      });
+    }
 
-      const id = randomBytes(5).toString("hex");
-      const createdAt = new Date();
+    const {
+      TEMA: topic,
+      RESUMEN: summary,
+      SENTIMIENTO: sentiment,
+      ETIQUETAS: tags,
+    } = json;
 
-      const createdAtFormat = Intl.DateTimeFormat("es-CO", {
-        day: "2-digit",
-        month: "short",
-        year: "numeric",
-        hour: "2-digit",
-        minute: "2-digit",
-        hour12: true,
-      }).format(createdAt);
+    const id = randomBytes(5).toString("hex");
+    const createdAt = new Date();
 
-      const payload = {
-        id,
-        text,
-        topic,
-        summary,
-        sentiment,
-        tags,
-        fileName,
-        createdAt,
-        createdAtFormat,
-      };
+    const createdAtFormat = Intl.DateTimeFormat("es-CO", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: true,
+    }).format(createdAt);
 
+    const payload = {
+      id,
+      text,
+      topic,
+      summary,
+      sentiment,
+      tags,
+      fileName,
+      createdAt,
+      createdAtFormat,
+    };
+
+    try {
       await Redis.setex(`calls/${id}`, 60 * 60 * 24, JSON.stringify(payload));
-
       return response.redirect(`/${id}`);
     } catch (error) {
       Logger.error(error);

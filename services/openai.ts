@@ -15,37 +15,46 @@ const client = Axios.create({
 export async function createTranscription(
   file: Buffer,
   fileName: string
-): Promise<string> {
-  Logger.info({ fileName }, "createTranscription");
+): Promise<string | undefined> {
+  try {
+    Logger.info({ fileName }, "createTranscription");
 
-  const form = new FormData();
-  form.append("model", "whisper-1");
-  form.append("file", file, fileName);
+    const form = new FormData();
+    form.append("model", "whisper-1");
+    form.append("file", file, fileName);
 
-  const response = await client.post("/audio/transcriptions", form);
-  return response.data.text;
+    const response = await client.post("/audio/transcriptions", form);
+    return response.data.text;
+  } catch (error) {
+    Logger.error({ fileName }, error);
+    return undefined;
+  }
 }
 
 export async function createSummary(text: string) {
-  Logger.info({ length: text.length }, "createSummary");
+  try {
+    Logger.info({ length: text.length }, "createSummary");
 
-  const response = await client.post("/chat/completions", {
-    model: "gpt-3.5-turbo",
-    messages: [
-      {
-        role: "user",
-        content:
-          "Generar: " +
-          "1. Tema del texto \n" +
-          "2. Resumen con no más de 5 frases \n" +
-          "3. Sentimiento del texto (NEGATIVO, POSITIVO, NEUTRO) \n" +
-          "4. Etiquetas separadas por coma \n" +
-          "Muestra la información en forma de un JSON con las siguientes llaves: TEMA,RESUMEN,SENTIMIENTO,ETIQUETAS" +
-          "\n\n" +
-          text.trim(),
-      },
-    ],
-  });
+    const response = await client.post("/chat/completions", {
+      model: "gpt-3.5-turbo",
+      messages: [
+        {
+          role: "user",
+          content:
+            "Analiza el siguiente texto y devuelve el tema del texto, " +
+            "el resumen en no más de 5 frases, " +
+            "el sentimiento del texto (NEGATIVO, POSITIVO, NEUTRO) " +
+            "y etiquetas separadas por coma. " +
+            "La respuesta debe ser un JSON con las siguientes llaves: TEMA,RESUMEN,SENTIMIENTO,ETIQUETAS." +
+            "\n\n" +
+            text.trim(),
+        },
+      ],
+    });
 
-  return response.data.choices[0]?.message?.content?.trim();
+    return response.data.choices[0]?.message?.content?.trim();
+  } catch (error) {
+    Logger.error({ text }, error);
+    return undefined;
+  }
 }
