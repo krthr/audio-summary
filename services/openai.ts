@@ -17,10 +17,12 @@ export async function createTranscription(
   fileName: string
 ): Promise<string | undefined> {
   try {
-    Logger.info({ fileName }, "createTranscription");
+    const model = Env.get("WHISPER_MODEL", "whisper-1");
+
+    Logger.info({ fileName, model }, "createTranscription");
 
     const form = new FormData();
-    form.append("model", "whisper-1");
+    form.append("model", model);
     form.append("file", file, fileName);
 
     const response = await client.post("/audio/transcriptions", form);
@@ -33,10 +35,11 @@ export async function createTranscription(
 
 export async function createSummary(text: string) {
   try {
-    Logger.info({ length: text.length }, "createSummary");
+    const model = Env.get("GPT_MODEL", "gpt-3.5-turbo");
+    Logger.info({ length: text.length, model }, "createSummary");
 
     const response = await client.post("/chat/completions", {
-      model: "gpt-3.5-turbo",
+      model,
       messages: [
         {
           role: "user",
